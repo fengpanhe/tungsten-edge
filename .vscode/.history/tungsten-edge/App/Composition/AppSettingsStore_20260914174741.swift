@@ -1,5 +1,4 @@
 import Combine
-import CoreGraphics
 import Foundation
 
 /// 悬停效果档位。
@@ -77,11 +76,10 @@ final class AppSettingsStore: ObservableObject {
     nonisolated static let defaultEnabledEdgeAutoHideDelay: Double = 0.1
 
     /// 条内窗口标题最大宽度（中档基线，pt）。真正生效的上限 = 这个值 × 档位系数，
-    /// 由 `WindowTitleTextMetrics.maximumWidth(_:for:)` 算。**出厂默认 140 = 历史实测的中档基线**，
-    /// 与 `WindowTitleTextMetrics.defaultMaximumWidth` 同源。两处各写一份字面值（Composition
-    /// 层不引 Scenes 层的度量类型，同 `ChipPillMetrics.chipHeight` 与 `DockSize.medium.panelHeight`
-    /// 的处理），其相等由 `AppSettingsStoreTests` 锁住——改默认档要同时改这两处。
-    nonisolated static let defaultWindowTitleMaxWidth: CGFloat = 140
+    /// 由 `WindowTitleTextMetrics.maximumWidth(_:for:)` 算。**出厂默认逐字沿用**
+    /// `WindowTitleTextMetrics.defaultMaximumWidth`（140）——那是历史实测的中档基线，
+    /// 改默认档只改那一个常量，这里跟着它走，两处永不各写一份。
+    nonisolated static let defaultWindowTitleMaxWidth: CGFloat = WindowTitleTextMetrics.defaultMaximumWidth
     /// 可调范围与步长。下限 60pt = 大约放得下几个字 + 省略号，再窄标题就没有可读的意义了；
     /// 上限 260pt 已经比默认宽近一倍，够长标题的人用。步长 10pt：滑块只落在整十档上，
     /// 免得存出 137.3 这种半像素宽度（同 `DockSize` 按整档定的精神）。
@@ -527,8 +525,6 @@ private enum Keys {
     static let showShelf = "com.tungsten.edge.showShelf"
     static let dockSize = "com.tungsten.edge.dockSize"
     static let hoverStyle = "com.tungsten.edge.hoverStyle"
-    /// 条内窗口标题最大宽度（中档基线，pt）。缺键 = 默认 140；坏值吸附到最近整十档并钳进范围。
-    static let windowTitleMaxWidth = "com.tungsten.edge.windowTitleMaxWidth"
         // `com.tungsten.edge.appearanceMode` 已随深色模式一起删除（owner 2026-08-16）。
         // **键留成孤儿，不读不写不删**——回退这轮改动时还读得回用户原来的选择。
     static let windowLiftEnabled = "com.tungsten.edge.windowLiftEnabled"

@@ -218,7 +218,7 @@ final class ChipPillMetricsTests: XCTestCase {
     func testTwoWidestTitledCardsStillLeaveAVisibleGap() {
         let scale: CGFloat = 1
         let longTitle = String(repeating: "very-long-window-title-", count: 20)
-        let cardWidth = ChipPillMetrics.width(title: longTitle, maxTitleWidth: baseline, scale: scale)
+        let cardWidth = ChipPillMetrics.width(title: longTitle, scale: scale)
             + 2 * ChipPillMetrics.titledCardInset * scale
         let restingGap = 2 * ChipPillMetrics.titledCardInset * scale + 2 /* Style.chipSpacing */
         let s = ChipPillMetrics.quietHoverScale(forCardWidth: cardWidth, scale: scale)

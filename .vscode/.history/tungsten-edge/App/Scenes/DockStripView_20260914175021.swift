@@ -1271,7 +1271,7 @@ struct DockStripView: View {
                     // 定宽图标行，运行点标记它是 app 入口。
                     // 消息区这张永远 `iconOnly`、不显示文字，标签给原始标题即可（`.help` 仍走 `fullTitle`）。
                     ChipView(item: main, labelTitle: main.title,
-                             scale: dockScale, maxTitleWidth: maxTitleWidth, hoverStyle: hoverStyle,
+                             scale: dockScale, hoverStyle: hoverStyle,
                              isHovered: hovered,
                              // 消息区图标恒代表整个应用（主窗开着也一样），列出全部窗口。
                              showsWindowListInMenu: true,

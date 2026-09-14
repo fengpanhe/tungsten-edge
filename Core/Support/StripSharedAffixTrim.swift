@@ -3,7 +3,7 @@ import Foundation
 /// 同一应用的几张窗口卡共享的那一段标题，不承担区分作用，从标签上去掉（issue #41）。
 ///
 /// Safari 开两个同配置窗口时标题是「个人 — 起始页」「个人 — 哔哩哔哩」，「个人 —」在两张卡上
-/// 一模一样，却把真正区分窗口的后半截挤过 `WindowTitleTextMetrics.maximumWidth`（140pt）截断。
+/// 一模一样，却把真正区分窗口的后半截挤过条内标题上限（`WindowTitleTextMetrics.maximumWidth(_:for:)`，默认 140pt、可在菜单里调）截断。
 /// 应用名后缀（`WindowDisplayTitle.trimmingAppNameSuffix`）是这件事的一个特例，但够不着
 /// 配置文件名这种**前缀**式重复，也够不着「mio: 」这种不是应用名的重复。
 ///

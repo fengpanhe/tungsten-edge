@@ -185,6 +185,7 @@ final class PanelCoordinator: NSObject {
     var displayTopologySubscription: AnyCancellable?
     var showShelfSubscription: AnyCancellable?
     var dockSizeSubscription: AnyCancellable?
+    var windowTitleMaxWidthSubscription: AnyCancellable?
     /// 换档事务代次：吞掉换档过程中被其它路径排队的动画布局（见 beginDockSizeChange）。
     var dockSizeChangeGeneration: UInt64 = 0
     /// 抽屉拖回任务条·"松手才变长"：转正进行中冻结任务条宽度，转正态结束（松手落定 / 拖出还原）再 relayout。

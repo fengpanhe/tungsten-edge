@@ -11,7 +11,7 @@ enum WindowDisplayTitle {
 
     /// 卡片标签用：去掉窗口标题尾部那截「分隔符 + 应用名」（`local-dc02 - Google Chrome`
     /// → `local-dc02`）。图标已经表明是哪个应用，后缀是纯重复，而且它把真正区分窗口的前半截
-    /// 挤过 `WindowTitleTextMetrics.maximumWidth`（140pt）被截断——issue #41 的截图里两张
+    /// 挤过条内标题上限（`WindowTitleTextMetrics.maximumWidth(_:for:)`，默认 140pt、可在菜单里调）被截断——issue #41 的截图里两张
     /// Chrome 卡就是这样，一张只剩「local-dc02 - Google C…」。
     ///
     /// **只作用于渲染出来的标签**：`.help()` 的系统 tooltip 仍显示未截短的完整标题，

@@ -204,8 +204,8 @@ struct DockStripView: View {
                     var starting: [String: CGFloat] = [:]
                     for id in titled {
                         guard let new = newTitles[id], let old = renderedLabelTitles[id], new != old else { continue }
-                        let from = ChipPillMetrics.labelWidth(title: old, maxTitleWidth: maxTitleWidth, scale: dockScale)
-                        if from != ChipPillMetrics.labelWidth(title: new, maxTitleWidth: maxTitleWidth, scale: dockScale) { starting[id] = from }
+                        let from = ChipPillMetrics.labelWidth(title: old, scale: dockScale)
+                        if from != ChipPillMetrics.labelWidth(title: new, scale: dockScale) { starting[id] = from }
                     }
                     renderedLabelTitles = newTitles
                     if !starting.isEmpty { onLabelWidthChange(starting) }
@@ -1212,7 +1212,6 @@ struct DockStripView: View {
             ChipView(item: item,
                      labelTitle: projection.labelTitleByChipID[item.id] ?? item.title,
                      scale: dockScale,
-                     maxTitleWidth: maxTitleWidth,
                      hoverStyle: hoverStyle,
                      isHovered: hovered,
                      // 只有 app-* 兜底卡（访达常驻 / 保留兜底）代表整个应用；普通窗口卡不列。
@@ -1271,7 +1270,7 @@ struct DockStripView: View {
                     // 定宽图标行，运行点标记它是 app 入口。
                     // 消息区这张永远 `iconOnly`、不显示文字，标签给原始标题即可（`.help` 仍走 `fullTitle`）。
                     ChipView(item: main, labelTitle: main.title,
-                             scale: dockScale, maxTitleWidth: maxTitleWidth, hoverStyle: hoverStyle,
+                             scale: dockScale, hoverStyle: hoverStyle,
                              isHovered: hovered,
                              // 消息区图标恒代表整个应用（主窗开着也一样），列出全部窗口。
                              showsWindowListInMenu: true,

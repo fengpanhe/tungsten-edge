@@ -357,14 +357,14 @@ struct ChipView: View {
     ///   否则动画途中每一帧都在重算省略号、末尾抖动。
     /// `.clipped()` 只裁到盒子的当前宽度：变长时新字从图标那侧逐帧露出来，变短时旧字被收进去。
     private func titleLabel(_ title: String, color: Color) -> some View {
-        let boxWidth = ChipPillMetrics.labelWidth(title: title, maxTitleWidth: maxTitleWidth, scale: scale)
-        let truncates = ChipPillMetrics.labelTruncates(title: title, maxTitleWidth: maxTitleWidth, scale: scale)
+        let boxWidth = ChipPillMetrics.labelWidth(title: title, scale: scale)
+        let truncates = ChipPillMetrics.labelTruncates(title: title, scale: scale)
         return LabelBoxWidthDriver(width: boxWidth, chipID: item.id) { liveWidth in ZStack(alignment: .leading) {
             Text(title)
                 .font(.system(size: max(10, 12 * scale), weight: .medium, design: .rounded))
                 .foregroundStyle(color)
                 .lineLimit(1)
-                .frame(width: truncates ? WindowTitleTextMetrics.maximumWidth(maxTitleWidth, for: scale) : nil,
+                .frame(width: truncates ? WindowTitleTextMetrics.maximumWidth(for: scale) : nil,
                        alignment: .leading)
                 .fixedSize(horizontal: !truncates, vertical: false)
                 .id(title)
@@ -499,8 +499,8 @@ struct ChipView: View {
 
     /// 卡上渲染的标签（投影层算好的 `labelTitle`）。
     ///
-    /// **这一个字符串同时喂三处**——渲染的 `Text`、`ChipPillMetrics.width(title:maxTitleWidth:scale:)`
-    /// 派生的 `chipQuietHoverScale`、以及 `ChipPillMetrics.pillRect` 算出的气泡锚点。任何一处改回
+    /// **这一个字符串同时喂三处**——渲染的 `Text`、`ChipPillMetrics.width(title:scale:)` 派生的
+    /// `chipQuietHoverScale`、以及 `ChipPillMetrics.pillRect` 算出的气泡锚点。任何一处改回
     /// `fullTitle`，悬停缩放上限和气泡尾巴就锚在一个不存在的宽度上。
     private var displayTitle: String { labelTitle }
 

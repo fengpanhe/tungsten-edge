@@ -381,7 +381,6 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         nativeDockSliderView.sync(delay: store.nativeDockAutoHideDelay)
         nativeDockApplyItem.isHidden = true
         edgeSliderView.sync(delay: store.edgeAutoHideDelay)
-        titleWidthSliderView.sync(width: store.windowTitleMaxWidth)
         refreshEdgeSectionTitle()
         rebuildTaskbarScreenMenu()
     }

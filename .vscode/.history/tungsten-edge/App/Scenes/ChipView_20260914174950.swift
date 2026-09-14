@@ -499,8 +499,8 @@ struct ChipView: View {
 
     /// 卡上渲染的标签（投影层算好的 `labelTitle`）。
     ///
-    /// **这一个字符串同时喂三处**——渲染的 `Text`、`ChipPillMetrics.width(title:maxTitleWidth:scale:)`
-    /// 派生的 `chipQuietHoverScale`、以及 `ChipPillMetrics.pillRect` 算出的气泡锚点。任何一处改回
+    /// **这一个字符串同时喂三处**——渲染的 `Text`、`ChipPillMetrics.width(title:scale:)` 派生的
+    /// `chipQuietHoverScale`、以及 `ChipPillMetrics.pillRect` 算出的气泡锚点。任何一处改回
     /// `fullTitle`，悬停缩放上限和气泡尾巴就锚在一个不存在的宽度上。
     private var displayTitle: String { labelTitle }
 

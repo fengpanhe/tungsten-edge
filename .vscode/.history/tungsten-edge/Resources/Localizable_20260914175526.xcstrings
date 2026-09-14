@@ -1,23 +1,6 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "%d pt": {
-      "comment": "窗口标题宽度滑块的档位数值，%d 是点数（pt）",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%d pt"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%d pt"
-          }
-        }
-      }
-    },
     "Single-display mode": {
       "comment": "Dock 栏显示位置子菜单 · 第一组标题（悬停底边切换 / 固定到某屏）",
       "localizations": {
@@ -4114,40 +4097,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Write something first."
-          }
-        }
-      }
-    },
-    "Wide": {
-      "comment": "窗口标题宽度滑块右端刻度：更宽",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "宽"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wide"
-          }
-        }
-      }
-    },
-    "Window title width": {
-      "comment": "状态栏菜单 · 条内窗口标题最大宽度滑块所在的子菜单标题",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "窗口标题宽度"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Window title width"
           }
         }
       }

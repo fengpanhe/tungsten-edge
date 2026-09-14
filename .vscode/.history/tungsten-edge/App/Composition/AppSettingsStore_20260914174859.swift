@@ -1,5 +1,4 @@
 import Combine
-import CoreGraphics
 import Foundation
 
 /// 悬停效果档位。

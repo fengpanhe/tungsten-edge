@@ -218,7 +218,7 @@ final class ChipPillMetricsTests: XCTestCase {
     func testTwoWidestTitledCardsStillLeaveAVisibleGap() {
         let scale: CGFloat = 1
         let longTitle = String(repeating: "very-long-window-title-", count: 20)
-        let cardWidth = ChipPillMetrics.width(title: longTitle, maxTitleWidth: baseline, scale: scale)
+        let cardWidth = ChipPillMetrics.width(title: longTitle, scale: scale)
             + 2 * ChipPillMetrics.titledCardInset * scale
         let restingGap = 2 * ChipPillMetrics.titledCardInset * scale + 2 /* Style.chipSpacing */
         let s = ChipPillMetrics.quietHoverScale(forCardWidth: cardWidth, scale: scale)
@@ -250,14 +250,14 @@ final class ChipPillMetricsTests: XCTestCase {
     /// 药丸在卡内水平居中 → midX 直接沿用卡片的；竖向全部来自常量。
     func testPillRectIsHorizontallyCenteredOnTheCard() {
         let card = CGRect(x: 100, y: 200, width: 180, height: 52)
-        let rect = ChipPillMetrics.pillRect(inCard: card, title: "psd-文件", maxTitleWidth: baseline, scale: 1)
+        let rect = ChipPillMetrics.pillRect(inCard: card, title: "psd-文件", scale: 1)
         XCTAssertEqual(rect.midX, card.midX, accuracy: 0.001)
     }
 
     /// 屏幕坐标 y 向上：静息态药丸顶边 = 卡片顶边下方 `boxTopInset`。
     func testRestPillRectSitsBoxTopInsetBelowTheCardTop() {
         let card = CGRect(x: 0, y: 0, width: 180, height: ChipPillMetrics.chipHeight)
-        let rect = ChipPillMetrics.pillRect(inCard: card, title: "psd-文件", maxTitleWidth: baseline, scale: 1)
+        let rect = ChipPillMetrics.pillRect(inCard: card, title: "psd-文件", scale: 1)
         XCTAssertEqual(rect.maxY, card.maxY - ChipPillMetrics.boxTopInset, accuracy: 0.001)
         XCTAssertEqual(rect.height, 34, accuracy: 0.001)
     }

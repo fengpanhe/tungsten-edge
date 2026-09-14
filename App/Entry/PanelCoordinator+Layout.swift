@@ -148,6 +148,16 @@ extension PanelCoordinator {
             .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.beginDockSizeChange() }
+        // 标题最大宽度变了会改每张带标题卡的宽度 → 任务条内容宽度。SwiftUI 重画后没有别的路径
+        // 回来量宽（同 showShelf），再推一轮主队列等这一轮布局跑完，`fittingSize` 那时才是新值。
+        // 换档不同：这里不改面板高度 / 胶囊尺寸，普通的 relayout 就够，不用走 beginDockSizeChange 事务。
+        windowTitleMaxWidthSubscription = settingsStore.$windowTitleMaxWidth
+            .removeDuplicates()
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                DispatchQueue.main.async { [weak self] in self?.relayout(animated: true) }
+            }
     }
 
     /// 换档是一次**事务**，不是普通的内容变化：面板高度、胶囊宽度、条内每个 chip 的尺寸同时变，

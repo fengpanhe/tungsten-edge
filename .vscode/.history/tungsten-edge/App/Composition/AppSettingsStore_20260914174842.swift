@@ -1,5 +1,4 @@
 import Combine
-import CoreGraphics
 import Foundation
 
 /// 悬停效果档位。
@@ -527,8 +526,6 @@ private enum Keys {
     static let showShelf = "com.tungsten.edge.showShelf"
     static let dockSize = "com.tungsten.edge.dockSize"
     static let hoverStyle = "com.tungsten.edge.hoverStyle"
-    /// 条内窗口标题最大宽度（中档基线，pt）。缺键 = 默认 140；坏值吸附到最近整十档并钳进范围。
-    static let windowTitleMaxWidth = "com.tungsten.edge.windowTitleMaxWidth"
         // `com.tungsten.edge.appearanceMode` 已随深色模式一起删除（owner 2026-08-16）。
         // **键留成孤儿，不读不写不删**——回退这轮改动时还读得回用户原来的选择。
     static let windowLiftEnabled = "com.tungsten.edge.windowLiftEnabled"

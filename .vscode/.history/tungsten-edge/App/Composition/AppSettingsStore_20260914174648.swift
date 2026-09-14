@@ -1,5 +1,4 @@
 import Combine
-import CoreGraphics
 import Foundation
 
 /// 悬停效果档位。
@@ -77,11 +76,10 @@ final class AppSettingsStore: ObservableObject {
     nonisolated static let defaultEnabledEdgeAutoHideDelay: Double = 0.1
 
     /// 条内窗口标题最大宽度（中档基线，pt）。真正生效的上限 = 这个值 × 档位系数，
-    /// 由 `WindowTitleTextMetrics.maximumWidth(_:for:)` 算。**出厂默认 140 = 历史实测的中档基线**，
-    /// 与 `WindowTitleTextMetrics.defaultMaximumWidth` 同源。两处各写一份字面值（Composition
-    /// 层不引 Scenes 层的度量类型，同 `ChipPillMetrics.chipHeight` 与 `DockSize.medium.panelHeight`
-    /// 的处理），其相等由 `AppSettingsStoreTests` 锁住——改默认档要同时改这两处。
-    nonisolated static let defaultWindowTitleMaxWidth: CGFloat = 140
+    /// 由 `WindowTitleTextMetrics.maximumWidth(_:for:)` 算。**出厂默认逐字沿用**
+    /// `WindowTitleTextMetrics.defaultMaximumWidth`（140）——那是历史实测的中档基线，
+    /// 改默认档只改那一个常量，这里跟着它走，两处永不各写一份。
+    nonisolated static let defaultWindowTitleMaxWidth: CGFloat = WindowTitleTextMetrics.defaultMaximumWidth
     /// 可调范围与步长。下限 60pt = 大约放得下几个字 + 省略号，再窄标题就没有可读的意义了；
     /// 上限 260pt 已经比默认宽近一倍，够长标题的人用。步长 10pt：滑块只落在整十档上，
     /// 免得存出 137.3 这种半像素宽度（同 `DockSize` 按整档定的精神）。
@@ -211,9 +209,6 @@ final class AppSettingsStore: ObservableObject {
         // 否则每次启动都要重新走一遍回退，且 UI 上勾选的档位和存的值对不上。
         dockSize = DockSize(rawValue: defaults.string(forKey: Keys.dockSize) ?? "") ?? .default
         hoverStyle = HoverStyle(rawValue: defaults.string(forKey: Keys.hoverStyle) ?? "") ?? .default
-        // 坏值（缺失、类型不对、越界）吸附到最近的整十档并回落到范围内，随后立刻重写（同 dockSize）。
-        let titleWidth = Self.sanitizedWindowTitleMaxWidth(defaults.object(forKey: Keys.windowTitleMaxWidth))
-        windowTitleMaxWidth = titleWidth
         let nativeDelay = Self.sanitizedStoredDelay(
             defaults.object(forKey: Keys.nativeDockAutoHideDelay),
             fallback: Self.defaultNativeDockAutoHideDelay
@@ -242,7 +237,6 @@ final class AppSettingsStore: ObservableObject {
         }
         defaults.set(dockSize.rawValue, forKey: Keys.dockSize)
         defaults.set(hoverStyle.rawValue, forKey: Keys.hoverStyle)
-        defaults.set(Double(titleWidth), forKey: Keys.windowTitleMaxWidth)
         defaults.set(nativeDelay, forKey: Keys.nativeDockAutoHideDelay)
         defaults.set(lastEnabledNativeDockAutoHideDelay, forKey: Keys.nativeDockAutoHideLastEnabledDelay)
         defaults.set(edgeDelay, forKey: Keys.edgeAutoHideDelay)
@@ -338,15 +332,6 @@ final class AppSettingsStore: ObservableObject {
         guard hoverStyle != value else { return }
         hoverStyle = value
         defaults.set(value.rawValue, forKey: Keys.hoverStyle)
-    }
-
-    /// 标题最大宽度：任意 pt 输入吸附到最近的整十档、钳进 [min, max]，再落盘。
-    /// 与 `dockSize` 一样即时生效（本地值），`PanelCoordinator` 订阅它触发 relayout。
-    func setWindowTitleMaxWidth(_ value: CGFloat) {
-        let snapped = Self.snapWindowTitleMaxWidth(value)
-        guard windowTitleMaxWidth != snapped else { return }
-        windowTitleMaxWidth = snapped
-        defaults.set(Double(snapped), forKey: Keys.windowTitleMaxWidth)
     }
 
     func setShowShelf(_ value: Bool) {
@@ -500,20 +485,6 @@ final class AppSettingsStore: ObservableObject {
         DefaultsValueParsing.finiteNumericValue(value)
     }
 
-    /// 标题最大宽度的 UserDefaults 读取收口：缺键、类型错误、非有限一律回默认档，
-    /// 其余吸附到最近整十档并钳进范围（同 `sanitizedStoredDelay` 对 delay 的处理）。
-    static func sanitizedWindowTitleMaxWidth(_ value: Any?) -> CGFloat {
-        guard let numeric = storedNumericValue(value) else { return defaultWindowTitleMaxWidth }
-        return snapWindowTitleMaxWidth(CGFloat(numeric))
-    }
-
-    /// 吸附到最近的整十档并钳进 [min, max]。非有限输入回默认档（防 NaN 穿透到 rounded()）。
-    static func snapWindowTitleMaxWidth(_ value: CGFloat) -> CGFloat {
-        guard value.isFinite else { return defaultWindowTitleMaxWidth }
-        let clamped = min(max(value, minWindowTitleMaxWidth), maxWindowTitleMaxWidth)
-        return (clamped / windowTitleMaxWidthStep).rounded() * windowTitleMaxWidthStep
-    }
-
     private static func migrateLegacyEnabledKey(defaults: UserDefaults, enabledKey: String, delayKey: String) {
         if let storedEnabled = defaults.object(forKey: enabledKey) as? Bool, storedEnabled == false {
             defaults.set(neverHideDelay, forKey: delayKey)
@@ -527,8 +498,6 @@ private enum Keys {
     static let showShelf = "com.tungsten.edge.showShelf"
     static let dockSize = "com.tungsten.edge.dockSize"
     static let hoverStyle = "com.tungsten.edge.hoverStyle"
-    /// 条内窗口标题最大宽度（中档基线，pt）。缺键 = 默认 140；坏值吸附到最近整十档并钳进范围。
-    static let windowTitleMaxWidth = "com.tungsten.edge.windowTitleMaxWidth"
         // `com.tungsten.edge.appearanceMode` 已随深色模式一起删除（owner 2026-08-16）。
         // **键留成孤儿，不读不写不删**——回退这轮改动时还读得回用户原来的选择。
     static let windowLiftEnabled = "com.tungsten.edge.windowLiftEnabled"

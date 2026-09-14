@@ -261,20 +261,6 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         dockSizeItem.submenu = dockSizeMenu
         menu.addItem(dockSizeItem)
 
-        // 「窗口标题宽度 ▸」：子菜单里一条即时生效的滑块。碰它就解除边缘自动隐藏抑制（同唤醒滑块）——
-        // 拖了却看不到条变宽会以为没生效。任务条右键弹出的那条例外：菜单锚在条上沿，条一动菜单就悬空，
-        // 所以那条路径只写值、不解抑制（`isPresentedFromTaskbar`），关掉菜单即见效。
-        titleWidthSliderView.onWidthChange = { [weak self, weak store] width in
-            store?.setWindowTitleMaxWidth(width)
-            guard let self, !self.isPresentedFromTaskbar else { return }
-            self.onMenuVisibilityChanged(false)
-        }
-        let titleWidthSliderItem = NSMenuItem()
-        titleWidthSliderItem.view = titleWidthSliderView
-        titleWidthMenu.addItem(titleWidthSliderItem)
-        titleWidthItem.submenu = titleWidthMenu
-        menu.addItem(titleWidthItem)
-
         // 三个开关。设置窗口里它们各带一行灰色说明，菜单里没有副标题的位置，
         // 说明随搬家一并删除（owner 2026-09-01 拍板接受这个代价）。
         showShelfItem.target = self
@@ -381,7 +367,6 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         nativeDockSliderView.sync(delay: store.nativeDockAutoHideDelay)
         nativeDockApplyItem.isHidden = true
         edgeSliderView.sync(delay: store.edgeAutoHideDelay)
-        titleWidthSliderView.sync(width: store.windowTitleMaxWidth)
         refreshEdgeSectionTitle()
         rebuildTaskbarScreenMenu()
     }

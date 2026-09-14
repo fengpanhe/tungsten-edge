@@ -1,23 +1,6 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "%d pt": {
-      "comment": "窗口标题宽度滑块的档位数值，%d 是点数（pt）",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%d pt"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%d pt"
-          }
-        }
-      }
-    },
     "Single-display mode": {
       "comment": "Dock 栏显示位置子菜单 · 第一组标题（悬停底边切换 / 固定到某屏）",
       "localizations": {

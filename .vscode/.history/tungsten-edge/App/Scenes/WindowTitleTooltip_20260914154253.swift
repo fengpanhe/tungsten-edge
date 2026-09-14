@@ -13,14 +13,11 @@ import SwiftUI
 /// 真的挂了它——带标题的卡截断之后完整标题哪儿都看不到（issue #41）。现在两个分支都挂，
 /// 且给的是**未去掉应用名后缀**的完整标题。
 enum WindowTitleTextMetrics {
-    /// 条内标题最大宽度的**出厂默认**基线（中档）。真正生效的基线由用户在状态栏菜单里调，
-    /// 走 `AppSettingsStore.windowTitleMaxWidth`，逐处**显式传入**（同 `scale`：不在这里读全局）。
+    /// 条内标题的最大宽度（中档基线）。任务条缩放后一律走 `maximumWidth(for:)`，
     /// 别在调用点另写一份字面值——两处各走各的曾经让药丸和判定对不上。
-    /// ⚠️ 这个数是 `AppSettingsStore.defaultWindowTitleMaxWidth` 的取值来源，改它 = 改默认档。
-    static let defaultMaximumWidth: CGFloat = 140
+    static let maximumWidth: CGFloat = 140
 
-    /// 生效上限 = 用户设定的中档基线 `maxTitleWidth` × 档位系数。中档（scale=1）时逐字等于基线本身。
-    static func maximumWidth(_ maxTitleWidth: CGFloat, for scale: CGFloat) -> CGFloat { maxTitleWidth * scale }
+    static func maximumWidth(for scale: CGFloat) -> CGFloat { maximumWidth * scale }
 
     static func font(scale: CGFloat) -> NSFont {
         let size = max(10, 12 * scale)
@@ -183,27 +180,25 @@ enum ChipPillMetrics {
     ///
     /// `ChipView.multiWindowChip` 用它给标签一个**显式**宽度，而不是让 `Text` 自己撑——
     /// 标签变长变短时这个宽度随任务条布局动画插值，文字本身按身份换、不在中间宽度上重排。
-    /// 也因此渲染出来的药丸宽度与下面 `width(title:maxTitleWidth:scale:)` 逐 pt 一致。
-    /// `maxTitleWidth` = 用户在菜单里调的中档基线（同 `scale`：**显式传入**，不在此读全局）。
-    static func labelWidth(title: String, maxTitleWidth: CGFloat, scale: CGFloat) -> CGFloat {
+    /// 也因此渲染出来的药丸宽度与下面 `width(title:scale:)` 逐 pt 一致。
+    static func labelWidth(title: String, scale: CGFloat) -> CGFloat {
         ceil(min(
             WindowTitleTextMetrics.intrinsicWidth(of: title, scale: scale),
-            WindowTitleTextMetrics.maximumWidth(maxTitleWidth, for: scale)
+            WindowTitleTextMetrics.maximumWidth(for: scale)
         ))
     }
 
     /// 标题是否超过上限、需要截断。超过时 `Text` 拿到的是上限宽度并自己加省略号；
     /// 没超过时 `Text` 按自然宽度画（不给它定宽——SwiftUI 量出的文字宽可能比 AppKit 多零点几 pt，
     /// 定宽会把最后一个字吞成省略号）。
-    static func labelTruncates(title: String, maxTitleWidth: CGFloat, scale: CGFloat) -> Bool {
+    static func labelTruncates(title: String, scale: CGFloat) -> Bool {
         WindowTitleTextMetrics.intrinsicWidth(of: title, scale: scale)
-            > WindowTitleTextMetrics.maximumWidth(maxTitleWidth, for: scale)
+            > WindowTitleTextMetrics.maximumWidth(for: scale)
     }
 
     /// 药丸宽度 = 左右内边距 + 图标槽 + 间距 + 标签盒宽度。
-    static func width(title: String, maxTitleWidth: CGFloat, scale: CGFloat) -> CGFloat {
-        (2 * horizontalPadding + iconSlot + iconSpacing) * scale
-            + labelWidth(title: title, maxTitleWidth: maxTitleWidth, scale: scale)
+    static func width(title: String, scale: CGFloat) -> CGFloat {
+        (2 * horizontalPadding + iconSlot + iconSpacing) * scale + labelWidth(title: title, scale: scale)
     }
 
     /// 由稳定的卡片屏幕矩形推出药丸屏幕矩形（macOS 屏幕坐标 y 向上）。
@@ -211,12 +206,11 @@ enum ChipPillMetrics {
     static func pillRect(
         inCard card: CGRect,
         title: String,
-        maxTitleWidth: CGFloat,
         scale: CGFloat
     ) -> CGRect {
         let pillHeight = height(scale: scale)
         let topY = card.maxY - boxTopInset * scale
-        let pillWidth = width(title: title, maxTitleWidth: maxTitleWidth, scale: scale)
+        let pillWidth = width(title: title, scale: scale)
         return CGRect(
             x: card.midX - pillWidth / 2,
             y: topY - pillHeight,

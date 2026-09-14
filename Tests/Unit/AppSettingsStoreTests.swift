@@ -145,6 +145,54 @@ final class AppSettingsStoreTests: XCTestCase {
         XCTAssertEqual(AppSettingsStore(defaults: defaults).hoverStyle, .quiet)
     }
 
+    // MARK: - 窗口标题最大宽度
+
+    @MainActor
+    func testWindowTitleMaxWidthDefaultsToTheBaselineAndPersists() {
+        let defaults = makeDefaults()
+        XCTAssertEqual(AppSettingsStore(defaults: defaults).windowTitleMaxWidth,
+                       AppSettingsStore.defaultWindowTitleMaxWidth,
+                       "缺键即出厂默认档（140）")
+
+        let store = AppSettingsStore(defaults: defaults)
+        store.setWindowTitleMaxWidth(90)
+        XCTAssertEqual(store.windowTitleMaxWidth, 90)
+        XCTAssertEqual(AppSettingsStore(defaults: defaults).windowTitleMaxWidth, 90, "档位要跨重启保持")
+    }
+
+    @MainActor
+    func testWindowTitleMaxWidthSnapsToTheTenPointStepAndClampsToRange() {
+        let defaults = makeDefaults()
+        let store = AppSettingsStore(defaults: defaults)
+
+        store.setWindowTitleMaxWidth(93)
+        XCTAssertEqual(store.windowTitleMaxWidth, 90, "吸附到最近的整十档")
+        store.setWindowTitleMaxWidth(96)
+        XCTAssertEqual(store.windowTitleMaxWidth, 100, "四舍五入到上一档")
+
+        store.setWindowTitleMaxWidth(0)
+        XCTAssertEqual(store.windowTitleMaxWidth, AppSettingsStore.minWindowTitleMaxWidth, "低于下限钳到下限")
+        store.setWindowTitleMaxWidth(9999)
+        XCTAssertEqual(store.windowTitleMaxWidth, AppSettingsStore.maxWindowTitleMaxWidth, "高于上限钳到上限")
+    }
+
+    @MainActor
+    func testWindowTitleMaxWidthRewritesCorruptStoredValue() {
+        let defaults = makeDefaults()
+        // 类型不对（字符串）：回默认档并**立刻重写**（同 dockSize 的坏值即重写惯例）。
+        defaults.set("wide", forKey: "com.tungsten.edge.windowTitleMaxWidth")
+        XCTAssertEqual(AppSettingsStore(defaults: defaults).windowTitleMaxWidth,
+                       AppSettingsStore.defaultWindowTitleMaxWidth)
+        XCTAssertEqual(defaults.double(forKey: "com.tungsten.edge.windowTitleMaxWidth"),
+                       Double(AppSettingsStore.defaultWindowTitleMaxWidth))
+
+        // 越界 / 非整档的数值：吸附并钳进范围后重写。
+        let offGrid = makeDefaults()
+        offGrid.set(4000.0, forKey: "com.tungsten.edge.windowTitleMaxWidth")
+        XCTAssertEqual(AppSettingsStore(defaults: offGrid).windowTitleMaxWidth,
+                       AppSettingsStore.maxWindowTitleMaxWidth)
+    }
+
     @MainActor
     func testWindowLiftEnabledStaysOffForUpgradersAndPersists() {
         let defaults = makeDefaults()
